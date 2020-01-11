@@ -1,0 +1,44 @@
+var m map[int][]int
+var max int
+
+func deepestLeavesSum(root *TreeNode) int {
+    m = make(map[int][]int)
+    ch := make(chan []int)
+	c := 0
+    
+    go walk(root,c,ch)
+    
+    for i := range ch{
+        fmt.Println(i)
+    }
+    
+    res := 0
+    for _,v := range m[max]{
+        res+=v
+    }
+    
+    return res
+}
+
+func walk(t *TreeNode, c int,ch chan []int){
+	walker(t,c,ch)
+	close(ch)
+}
+
+func walker(t *TreeNode, c int ,ch chan []int){
+	 if t ==nil{
+		 return
+	 }
+
+     m[c] = append(m[c],t.Val)
+	
+	 if max < c{
+        max = c 
+	}
+    temp := []int{c,t.Val}
+    
+     ch <-temp
+     c++
+	 walker(t.Left,c,ch)
+	 walker(t.Right,c,ch)
+}
